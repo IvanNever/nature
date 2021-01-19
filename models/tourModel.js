@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+// const User = require('./userModel');
 // const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
@@ -75,7 +76,6 @@ const tourSchema = new mongoose.Schema(
         description: {
             type: String,
             trim: true,
-            required: [true, 'A tour must have a description'],
         },
         imageCover: {
             type: String,
@@ -92,6 +92,36 @@ const tourSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        startLocation: {
+            // GeoJSON
+            type: {
+                type: String,
+                default: 'Point',
+                enum: ['Point'],
+            },
+            coordinates: [Number],
+            address: String,
+            description: String,
+        },
+        locations: [
+            {
+                type: {
+                    type: String,
+                    default: 'Point',
+                    enum: ['Point'],
+                },
+                coordinates: [Number],
+                address: String,
+                description: String,
+                day: Number,
+            },
+        ],
+        guides: [
+            {
+                type: mongoose.Schema.ObjectId,
+                ref: 'User',
+            },
+        ],
     },
     {
         toJSON: { virtuals: true },
@@ -109,6 +139,14 @@ tourSchema.pre('save', function (next) {
     next();
 });
 
+// tourSchema.pre('save', async function (next) {
+//     const guidesPromises = this.guides.map(
+//         async (id) => await User.findById(id)
+//     );
+//     this.guides = await Promise.all(guidesPromises);
+//     next();
+// });
+
 // tourSchema.pre('save', (next) => {
 //     console.log('Will save document');
 //     next();
@@ -121,6 +159,14 @@ tourSchema.pre('save', function (next) {
 
 //QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: 'guides',
+        select: '-__v -passwordChangedAt',
+    });
+    next();
+});
+
+tourSchema.pre(/^find/, function (next) {
     this.find({ secretTour: { $ne: true } });
     next();
 });
@@ -128,7 +174,6 @@ tourSchema.pre(/^find/, function (next) {
 //AGGREGATION MIDDLEWARE
 tourSchema.pre('aggregate', function (next) {
     this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-    console.log(this);
     next();
 });
 
