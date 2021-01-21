@@ -7,13 +7,6 @@ const router = express.Router();
 
 // router.param('id', tourController.checkID);
 
-// router
-//     .route('/:tourId/reviews')
-//     .post(
-//         authController.protect,
-//         authController.restrictTo('user'),
-//         reviewController.createReview
-//     );
 router.use('/:tourId/reviews', reviewRouter);
 
 router
@@ -29,6 +22,12 @@ router
         authController.restrictTo('admin', 'lead-guide', 'guide'),
         tourController.getMonthlyPlan
     );
+
+router
+    .route('/tours-within/:distance/center/:latlng/unit/:unit')
+    .get(tourController.getToursWithin);
+
+router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances);
 
 router
     .route('/')
