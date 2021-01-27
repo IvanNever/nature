@@ -6628,7 +6628,8 @@ var displayMap = function displayMap(locations) {
     }).setLngLat(loc.coordinates).addTo(map); //Add popup
 
     new mapboxgl.Popup({
-      offset: 30
+      offset: 30,
+      focusAfterOpen: false
     }).setLngLat(loc.coordinates).setHTML("<p>Day ".concat(loc.day, ": ").concat(loc.description, "</p>")).addTo(map); // Extends map bounds to include current location
 
     bounds.extend(loc.coordinates);
@@ -8668,7 +8669,7 @@ var bookTour = /*#__PURE__*/function () {
             stripe = Stripe('pk_test_51IDnXgCzQwQ0j8gOJbf3FRQ46iv8Sb5AXNpASCe2E3Uta7QcCdDVnevbsyNynicg2qusBH5u3VxlgUbipdCujCoQ00MOXWf2bs');
             _context.prev = 1;
             _context.next = 4;
-            return (0, _axios.default)("http://127.0.0.1:3000/api/v1/booking/checkout-session/".concat(tourId));
+            return (0, _axios.default)("http://127.0.0.1:3000/api/v1/bookings/checkout-session/".concat(tourId));
 
           case 4:
             session = _context.sent;
